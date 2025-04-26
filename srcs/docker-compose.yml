@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+
+  nginx:
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_data:/var/www/wordpress
+    networks:
+      - inception
+    restart: always
+    depends_on:
+      - wordpress
+    env_file:
+      - .env
+
+  
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+    container_name: mariadb
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - inception
+    restart: always
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+
+  wordpress:
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    container_name: wordpress
+    volumes:
+      - wordpress_data:/var/www/wordpress
+    networks:
+      - inception
+    restart: always
+    depends_on:
+      mariadb:
+          condition: service_healthy
+    env_file:
+      - .env
+
+
+networks:
+  inception:
+    driver: bridge
+
+volumes:
+  
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${WP_VOLUME_PATH:-/home/data/wordpress}
+      o: bind
+  
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${DB_VOLUME_PATH:-/home/data/mariadb}
+      o: bind
