@@ -16,4 +16,4 @@ COPY ./tools/wp_ctl.sh /
 RUN  chmod +x wp_ctl.sh
 
 # define the entrypoint command to run when the container starts
-ENTRYPOINT ["./wp_ctl.sh"]
+ENTRYPOINT ["/wp_ctl.sh"]

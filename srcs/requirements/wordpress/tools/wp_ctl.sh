@@ -15,29 +15,39 @@ mv wp-cli.phar /usr/local/bin/wp
 mkdir -p /var/www/wordpress 
 # go to wordpress directory
 cd /var/www/wordpress
+
+
+#---------------------------------------------------wp installation---------------------------------------------------#
+
+
+if [ -f wp-config.php ]; then
+	echo "WordPress already installed. Skipping setup."
+else
+	echo "Setting up WordPress..."
+	# download wordpress core files
+	wp core download --allow-root
+	# create wp-config.php file with the specified database details (Configure database)
+	wp core config --dbhost=mariadb:3306 --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_PASS" --allow-root
+	# install wordpress with the given title, admin username, password and email
+	wp core install --url="https://${DOMAIN_NAME}" --title="$WP_TITLE" --admin_user="$WP_ADMIN_N" --admin_password="$WP_ADMIN_P" --admin_email="$WP_ADMIN_E" --allow-root
+	#create a new user with the given username, email, password and role
+	wp user create "$WP_U_NAME" "$WP_U_EMAIL" --user_pass="$WP_U_PASS" --role="$WP_U_ROLE" --allow-root
+fi
+
+
 # give permission to wordpress directory
 chmod -R 755 .
 # change owner of wordpress directory to www-data
 chown -R www-data:www-data .
 
 
-#---------------------------------------------------wp installation---------------------------------------------------##---------------------------------------------------wp installation---------------------------------------------------#
-
-# download wordpress core files
-wp core download --allow-root
-# create wp-config.php file with the specified database details (Configure database)
-wp core config --dbhost=mariadb:3306 --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_PASS" --allow-root
-# install wordpress with the given title, admin username, password and email
-wp core install --url="https://${DOMAIN_NAME}" --title="$WP_TITLE" --admin_user="$WP_ADMIN_N" --admin_password="$WP_ADMIN_P" --admin_email="$WP_ADMIN_E" --allow-root
-#create a new user with the given username, email, password and role
-wp user create "$WP_U_NAME" "$WP_U_EMAIL" --user_pass="$WP_U_PASS" --role="$WP_U_ROLE" --allow-root
-
-
-
 #---------------------------------------------------php config---------------------------------------------------#
 
 # change listen port from unix socket to 9000
-sed -i '36 s@/run/php/php7.4-fpm.sock@9000@' /etc/php/7.4/fpm/pool.d/www.conf
+# sed -i '36 s@/run/php/php7.4-fpm.sock@9000@' /etc/php/7.4/fpm/pool.d/www.conf
+
+sed -i 's|^listen = .*|listen = 9000|' /etc/php/7.4/fpm/pool.d/www.conf
+
 # "sed" purpose is to find and replace text in files.
 
 
