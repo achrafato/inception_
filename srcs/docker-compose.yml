@@ -29,16 +29,15 @@ services:
       - mariadb_data:/var/lib/mysql
     networks:
       - inception
-    restart: always
     env_file:
       - .env
+    restart: always
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "--silent"]
-      interval: 5s
-      timeout: 5s
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
       retries: 5
-
-
+      start_period: 5s
+      timeout: 5s
 
   wordpress:
     build:
@@ -51,7 +50,7 @@ services:
       - inception
     restart: always
     depends_on:
-      mariadb:
+      mariadb: 
           condition: service_healthy
     env_file:
       - .env
@@ -62,7 +61,6 @@ networks:
     driver: bridge
 
 volumes:
-  
   wordpress_data:
     driver: local
     driver_opts:

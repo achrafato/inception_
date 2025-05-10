@@ -8,10 +8,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /etc/nginx/ssl /var/www/html var/run/nginx
-
-
-
+RUN mkdir -p /etc/nginx/ssl
 RUN mkdir -p /var/www/wordpress
 
 
@@ -28,8 +25,7 @@ RUN openssl req -x509 -nodes -days 365 \
 COPY conf/nginx.conf /etc/nginx/conf.d/default.conf
 
 
-
-COPY conf/index.php /var/www/wordpress/index.php
+COPY conf/indexx.php /var/www/wordpress/indexx.php
 COPY conf/index.html /var/www/wordpress/index.html
 
 # COPY tools/ngx_ctl.sh /ngx_ctl.sh

@@ -37,6 +37,7 @@ fi
 
 # give permission to wordpress directory
 chmod -R 755 .
+
 # change owner of wordpress directory to www-data
 chown -R www-data:www-data .
 
