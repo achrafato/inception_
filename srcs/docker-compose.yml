@@ -92,14 +92,16 @@ networks:
     driver: bridge
 
 volumes:
-  wordpress_data:
+  wordpress:
+    name: wordpress
     driver: local
     driver_opts:
       type: none
       device: ${WP_VOLUME_PATH:-/home/data/wordpress}
       o: bind
   
-  mariadb_data:
+  mariadb:
+    name: mariadb
     driver: local
     driver_opts:
       type: none
