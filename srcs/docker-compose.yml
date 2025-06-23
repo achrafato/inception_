@@ -3,6 +3,7 @@ version: '3'
 services:
 
   nginx:
+    image: nginx
     build:
       context: ./requirements/nginx
       dockerfile: Dockerfile
@@ -21,6 +22,7 @@ services:
 
   
   mariadb:
+    image: mariadb
     build:
       context: ./requirements/mariadb
       dockerfile: Dockerfile
@@ -40,6 +42,7 @@ services:
       timeout: 5s
 
   wordpress:
+    image: wordpress
     build:
       context: ./requirements/wordpress
       dockerfile: Dockerfile
@@ -56,8 +59,36 @@ services:
       - .env
 
 
+  adminer:
+    image: adminer
+    build:
+      context: ./requirements/bonus/adminer
+      dockerfile: Dockerfile
+    container_name: adminer
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+    restart: always
+    ports:
+      - "8080:8080"
+
+  static:
+    image: static
+    build:
+      context: ./requirements/bonus/static
+      dockerfile: Dockerfile
+    container_name: static
+    networks:
+      - inception
+    restart: always
+    ports:
+      - "8000:8000"
+
+
 networks:
   inception:
+    name: inception
     driver: bridge
 
 volumes:
